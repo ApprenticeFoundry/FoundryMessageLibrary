@@ -15,17 +15,30 @@ public class VirtualSquire
     protected Speed speed { get; set; } = new Speed();
     protected Angle heading { get; set; } = new Angle();
     protected Angle faceing { get; set; } = new Angle();
+    protected Angle turnAngle { get; set; } = new Angle();
 
     protected bool isPaused { get; set; } = false;
     public VirtualSquire()
     {
+        LastBiometric = new UDTO_Biometric()
+        {
+            panID = PanID,
+            temperature = 98.6,
+            heartRate = 60,
+            stepCount = 0
+        };
     }
     public VirtualSquire(VirtualSquire source)
     {
         this.CurrentPosition = source.CurrentPosition.Duplicate<UDTO_Position>();
+        this.CurrentPosition.panID = PanID;
+
         this.Speed_MetersPerSecond(source.speed.MetersPerSecond());
         this.Faceing_Degrees(source.faceing.Degrees());
         this.Heading_Degrees(source.heading.Degrees());
+
+        this.LastBiometric = source.LastBiometric.Duplicate<UDTO_Biometric>();
+        this.LastBiometric.panID = PanID;
     }
 
 
@@ -97,18 +110,31 @@ public class VirtualSquire
         return this;
     }
 
+    public VirtualSquire Turn_Angle(Angle angle)
+    {
+        this.turnAngle.Degrees(angle.Degrees());
+        return this;
+    }
+
     public VirtualSquire ComputeStep(double delta_seconds, int frameID)
     {
         //the distance is computed in km  so
-        var dist_km = this.speed.KiloMetersPerSecond() * delta_seconds;  
-        
-        if ( !this.isPaused ) {
+        var dist_km = this.speed.KiloMetersPerSecond() * delta_seconds;
+
+        if (!this.isPaused)
+        {
             var pos = this.CurrentPosition;
+            this.heading.IncrementDegrees(this.turnAngle.Degrees());
             var feature = pos.destination(dist_km, this.heading.Degrees());
             var loc = feature.toLatLng();
 
             this.CurrentPosition.lat = loc[1];
             this.CurrentPosition.lng = loc[0];
+
+            Random rand = new Random();
+            this.LastBiometric.panID = PanID;
+            this.LastBiometric.heartRate = rand.Next(60, 90);
+            this.LastBiometric.stepCount += 5;
         }
         return this;
     }
@@ -116,7 +142,8 @@ public class VirtualSquire
     public VirtualSquire TimeStep(double delta_seconds, int frameID)
     {
         this.ComputeStep(delta_seconds, frameID);
-        if ( !this.isPaused ) {
+        if (!this.isPaused)
+        {
         }
         return this;
     }

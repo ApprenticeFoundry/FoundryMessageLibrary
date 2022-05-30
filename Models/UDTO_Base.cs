@@ -1,9 +1,12 @@
 namespace IoBTMessage.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
+// using Newtonsoft.Json;
+// using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 public static class UDTO
 {
+    private static readonly Dictionary<string, Type> udtoTypes = new();
+
     public static string asTopic<T>() where T : UDTO_Base
     {
         return UDTO_Base.asTopic(typeof(T).Name);
@@ -27,48 +30,41 @@ public static class UDTO
         return obj.sync<T>();
     }
 
-    public static UDTO_Base HydrateObject(object target)
+
+    public static Type LookupType(string name) 
     {
-        var data = target.ToString();
-        //Console.WriteLine($"HydrateObject: {data}" );
-
-        var assembly = typeof(UDTO_Base).Assembly;
-        var nameSpace = assembly.GetName().Name;
-         
-        var rules = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None };
-        var targetObject = JsonConvert.DeserializeObject(data, rules) as JObject;
-        var topicJson = targetObject.GetValue("udtoTopic");
-
-        var topic = topicJson.Value<string>();
-        var className = $"IoBTMessage.Models.UDTO_{topic}";
-        //Console.WriteLine($"HydrateObject: {className}" );
-
-        Type type = assembly.GetType(className);
-        var result = Activator.CreateInstance(type) as UDTO_Base;
-
-        foreach (var property in type.GetProperties())
-        {
-            var json = targetObject.GetValue(property.Name);
-            var value = json.Value<string>();
-            //Console.WriteLine($"HydrateObject: {property.Name} = {value}  {json}" );
-            try
-            {
-                if ( property.PropertyType == typeof(string) )
-                {
-                    property.SetValue(result, value);
-                } 
-                else  // let assume it is a double number 
-                {
-                    var number = IoBTMath.toDouble(value);
-                    property.SetValue(result, number);
-                }
-            } 
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error HydrateObject: {property.Name} = {value}  {json}");
-                Console.WriteLine(ex.ToString());
+        if ( udtoTypes.Keys.Count == 0) {
+            var assembly = typeof(UDTO_Base).Assembly;
+            foreach(var type in assembly.DefinedTypes.Where( item => item.Name.StartsWith("UDTO_"))) {
+                udtoTypes.Add(type.Name, type);
+                var shortname = type.Name.Replace("UDTO_", "");
+                udtoTypes.Add(shortname, type);
             }
         }
+        
+        if (udtoTypes.TryGetValue(name, out Type found) ) {
+            throw new ArgumentException(@"type not found {name}");
+        }
+        return found;
+    }
+    public static UDTO_Base Hydrate(string target)
+    {
+        using var stream = new MemoryStream();
+        using var writer = new Utf8JsonWriter(stream);
+        var node = JsonNode.Parse(target);
+        node.WriteTo(writer);
+        writer.Flush();
+
+        var topic = node["udtoTopic"].ToString();
+        Type type = LookupType(topic);
+        var result = JsonSerializer.Deserialize(stream.ToArray(), type) as UDTO_Base;
+
+        return result;
+    }
+
+    public static string Dehydrate(UDTO_Base target)
+    {
+        var result = JsonSerializer.Serialize(target, target.GetType());
         return result;
     }
 }
@@ -131,6 +127,17 @@ public class UDTO_Base
     {
         return name.Replace("UDTO_", "");
     }
+
+    public static string asTopic<T>() where T : UDTO_Base
+    {
+        return UDTO_Base.asTopic(typeof(T).Name);
+    }
+
+    public static string asTopicLower<T>() where T : UDTO_Base
+    {
+        return UDTO_Base.asTopic(typeof(T).Name).ToLower();
+    }
+
     public T sync<T>() where T : UDTO_Base
     {
         if (String.IsNullOrEmpty(udtoTopic))

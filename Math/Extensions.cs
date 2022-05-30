@@ -9,6 +9,8 @@ using GeoJSON.Net.Geometry;
 static public class GeoMath
 {
 
+    public static HighResOffset HighResOffset { get; set; } = new HighResOffset();
+
     public static double toDouble(this string Value)
     {
         if (Value == null)
@@ -140,7 +142,7 @@ static public class GeoMath
         {
             lat = loc[1],
             lng = loc[0],
-            alt = source.alt + pos.yLoc,
+            alt = source.alt + pos.yLoc + HighResOffset.yLoc,
         };
 
         return result;
@@ -155,7 +157,7 @@ static public class GeoMath
         {
             units = units,
             xLoc = dist * Math.Sin(rad),
-            yLoc = target.alt - source.alt,
+            yLoc = target.alt - source.alt - HighResOffset.yLoc,
             zLoc = dist * Math.Cos(rad),
             yAng = brg
         };

@@ -133,8 +133,15 @@ public class Angle: MeasuredValue<double>
         return this;
     }
     public Angle Radians(double value){
-        this.Value = value * 180.0 / Math.PI;
+        return this.Degrees(value * 180.0 / Math.PI);
+    }
+
+    public Angle IncrementDegrees(double value) {
+        this.Value += value;
         return this;
+    }
+    public Angle IncrementRadians(double value){
+        return this.IncrementDegrees(value * 180.0 / Math.PI);
     }
 
     public double Degrees(){

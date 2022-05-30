@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace IoBTMessage.Models;
+﻿namespace IoBTMessage.Models;
 
 public interface ISuccessOrFailure
 {
@@ -38,11 +33,8 @@ public class Failure : ISuccessOrFailure
 
 public class ContextWrapper<T>
 {
-    //static Guid GLOBALGuid = Guid.NewGuid();
 
     public DateTime dateTime { get; set; }
-    //public Guid sourceGuid { get; set; }
-    //public Guid messageGuid { get; set; }
     public int length { get; set; }
     public String payloadType { get; set; }
     public ICollection<T> payload { get; set; }
@@ -52,8 +44,6 @@ public class ContextWrapper<T>
     public ContextWrapper(T obj, string error = "")
     {
         this.dateTime = DateTime.UtcNow;
-        //this.sourceGuid = ContextWrapper<T>.GLOBALGuid;
-        //this.messageGuid = Guid.NewGuid();
 
         this.payloadType = obj == null ? "NONE" : obj.GetType().Name;
         this.payload = new List<T>() { obj };
@@ -61,27 +51,6 @@ public class ContextWrapper<T>
 
         this.hasError = error != string.Empty ? true : false;
         this.message = error != string.Empty ? error : string.Empty;
-
-
-    }
-
-    public static ContextWrapper<Success> success(string message = "")
-    {
-        var wrap = new ContextWrapper<Success>(new Success()
-        {
-            Message = message,
-            Status = true
-        });
-        return wrap;
-    }
-    public static ContextWrapper<Success> exception(string message = "")
-    {
-        var wrap = new ContextWrapper<Success>(new Success()
-        {
-            Message = message,
-            Status = false
-        });
-        return wrap;
     }
 
     public ContextWrapper(ICollection<T> list, string error = "") : this(list.FirstOrDefault(), error)
@@ -89,7 +58,6 @@ public class ContextWrapper<T>
         this.payload = list;
         this.length = payload.Count;
     }
-
 
     public ContextWrapper(IEnumerable<T> list, string error = "") : this(list.FirstOrDefault(), error)
     {
@@ -105,6 +73,27 @@ public class ContextWrapper<T>
         this.payload = new List<T>() { };
         this.hasError = true;
         this.message = error;
+    }
+
+    public static ContextWrapper<Success> success(string message = "")
+    {
+        var wrap = new ContextWrapper<Success>(new Success()
+        {
+            Message = message,
+            Status = true
+        });
+        wrap.hasError = false;
+        return wrap;
+    }
+    public static ContextWrapper<Failure> exception(string message = "")
+    {
+        var wrap = new ContextWrapper<Failure>(new Failure()
+        {
+            Message = message,
+            Status = false
+        });
+        wrap.hasError = true;
+        return wrap;
     }
 
 }

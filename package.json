@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "generate-types": "csharp-models-to-typescript --config=pack-config.json"
+  },
+  "dependencies": {
+    "csharp-models-to-typescript": "^0.21.1"
+  }
+}

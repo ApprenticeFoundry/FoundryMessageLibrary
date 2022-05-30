@@ -6,7 +6,11 @@ public class UDTO_Platform : UDTO_Base
     public string platformName { get; set; }
     public UDTO_Position position { get; set; }
     public BoundingBox boundingBox { get; set; }
-    public List<UDTO_Body> members
+
+ 
+    private Dictionary<string, UDTO_Body> _bodyLookup = new Dictionary<string, UDTO_Body>();
+
+    public List<UDTO_Body> bodies
     {
         get
         {
@@ -25,13 +29,57 @@ public class UDTO_Platform : UDTO_Base
         }
     }
 
+    private Dictionary<string, UDTO_Label> _labelLookup = new Dictionary<string, UDTO_Label>();
 
-    private Dictionary<string, UDTO_Body> _bodyLookup = new Dictionary<string, UDTO_Body>();
+    public List<UDTO_Label> labels
+    {
+        get
+        {
+            return _labelLookup.Select(pair => pair.Value).ToList();
+        }
+        set
+        {
+            if (value != null)
+            {
+                value.ForEach(item => EstablishLabel(item, false));
+            }
+            else
+            {
+                _labelLookup.Clear();
+            }
+        }
+    }
+
+
+    public void Merge(UDTO_Platform platform)
+    {
+        if (platform.position != null)
+        {
+            this.position = platform.position;
+        }
+        if (platform.boundingBox != null)
+        {
+            this.boundingBox = platform.boundingBox;
+        }
+
+        platform.bodies.ForEach(body =>
+        {
+            EstablishBody(body);
+        });
+        platform.bodies = null;
+
+        platform.labels.ForEach(label =>
+        {
+            EstablishLabel(label);
+        });
+        platform.labels = null;
+    }
+
 
     public override string compress(char d = ',')
     {
         // Optional param in body compress function lets us use a semicolon instead of a comma as a delimeter 
-        var bodies = members.Select(item => item.compress('!')).ToList();
+        var bodies = this.bodies.Select(item => item.compress('!')).ToList();
         var bodycount = bodies.Count();
         var platform = $"{base.compress(d)}{d}{platformName}{d}{position?.compress(d)}{d}{boundingBox?.compress(d)}";
         if (bodycount > 0)
@@ -148,24 +196,63 @@ public class UDTO_Platform : UDTO_Base
         return found;
     }
 
-
-    public void Merge(UDTO_Platform platform)
+    public UDTO_Label FindOrCreateLabel(string labelName, bool create)
     {
-        if (platform.position != null)
+        UDTO_Label found;
+        if (!_labelLookup.TryGetValue(labelName, out found) && create)
         {
-            this.position = platform.position;
+            found = new UDTO_Label()
+            {
+                panID = panID,
+                labelName = labelName,
+                platformName = platformName,
+                uniqueGuid = Guid.NewGuid().ToString()
+            };
+            _labelLookup[labelName] = found;
         }
-        if (platform.boundingBox != null)
-        {
-            this.boundingBox = platform.boundingBox;
-        }
-
-        platform.members.ForEach(body =>
-        {
-            EstablishBody(body);
-        });
-        platform.members = null;
-
+        return found;
     }
+
+    public UDTO_Label EstablishLabel(UDTO_Label label, bool delete = false)
+    {
+        UDTO_Label found;
+        if (_labelLookup.TryGetValue(label.labelName, out found))
+        {
+            found.type = label.type;
+            found.data = label.data;
+
+            if (found.position == null)
+            {
+                found.position = label.position;
+            }
+            else if (label.position != null)
+            {
+                found.position.copyFrom(label.position);
+            }
+
+            // if (found.boundingBox == null)
+            // {
+            //     found.boundingBox = label.boundingBox;
+            // }
+            // else if (label.boundingBox != null)
+            // {
+            //     found.boundingBox.copyFrom(label.boundingBox);
+            // }
+
+            if (delete)
+            {
+                _labelLookup.Remove(label.labelName);
+            }
+
+        }
+        else if (!delete)
+        {
+            _labelLookup[label.labelName] = label;
+            found = label;
+        }
+        return found;
+    }
+
+
 }
 
