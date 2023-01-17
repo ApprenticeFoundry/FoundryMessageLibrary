@@ -1,3 +1,5 @@
+using System;
+
 namespace IoBTMessage.Models
 {
 
@@ -7,6 +9,20 @@ namespace IoBTMessage.Models
 		public string type { get; set; }
 		public string symbol { get; set; }
 		public string note { get; set; }
+
+
+		public static SPEC_Objective RandomSpec()
+		{
+			var gen = new MockDataGenerator();
+			return new SPEC_Objective()
+			{
+				name = gen.GenerateName(),
+				type = "",
+				symbol = gen.GenerateSymbol(),
+				note = gen.GenerateText(),
+				uniqueGuid = Guid.NewGuid().ToString(),
+			};
+		}
 	}
 
 	[System.Serializable]

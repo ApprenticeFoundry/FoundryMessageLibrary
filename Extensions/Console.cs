@@ -1,41 +1,33 @@
 ﻿
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace IoBTMessage.Models
 {
 	public static class ConsoleHelpers
 	{
 
+		public static void WriteLine<T>(this T entity, ConsoleColor? color = null)
+		{
+			if (color.HasValue)
+				Console.ForegroundColor = color.Value;
 
-		// public static string WriteLine<T>(this T entity, ConsoleColor? color = null)
-		// {
-		// 	if (color.HasValue)
-		// 		Console.ForegroundColor = color.Value;
-		// 	var message = entity != null ? JsonConvert.SerializeObject(entity, Formatting.Indented) : "null";
+			var options = new JsonSerializerOptions()
+			{
+				IncludeFields = true,
+				IgnoreReadOnlyFields = true,
+				WriteIndented = true,
+				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+			};
 
-		// 	Console.WriteLine(message);
-		// 	Console.ResetColor();
-		// 	return message;
-		// }
+			Console.WriteLine(entity != null ? JsonSerializer.Serialize(entity, typeof(T), options) : "null");
+			Console.ResetColor();
+		}
 
-		// public static string WriteLine<T>(this T entity, ConsoleColor? color = null)
-		// {
-		//     if (color.HasValue)
-		//         Console.ForegroundColor = color.Value;
 
-		//     var options = new JsonSerializerOptions()
-		//     {
-		//         IncludeFields = false,
-		//         IgnoreReadOnlyFields = true,
-		//         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-		//     };
 
-		//     var message = entity != null ? JsonSerializer.Serialize(entity, options) : "null";
-
-		//     Console.WriteLine(message);
-		//     Console.ResetColor();
-		//     return message;
-		// }
+	
 		public static string WriteLine(this string message, ConsoleColor? color = null)
 		{
 			if (color.HasValue)

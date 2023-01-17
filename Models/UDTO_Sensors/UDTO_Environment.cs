@@ -10,12 +10,23 @@
 
 namespace IoBTMessage.Models
 {
-		public class SPEC_Environment : SPEC_SensorBase
+	public class SPEC_Environment : SPEC_SensorBase
 	{
 		public double temperature { get; set; }
 		public double humidity { get; set; }
 		public double pressure { get; set; }
 		public SPEC_Direction wind { get; set; }
+
+		public static SPEC_Environment RandomSpec()
+		{
+			var gen = new MockDataGenerator();
+			return new SPEC_Environment()
+			{
+				temperature = gen.GenerateDouble(60, 90),
+				humidity = gen.GenerateDouble(97.8, 99.3),
+				pressure = gen.GenerateDouble(1260, 9010),
+			};
+		}
 
 	}
 	[System.Serializable]

@@ -82,6 +82,13 @@ static public class IoBTMath
 	{
 		return ang * 180 / Math.PI;
 	}
+
+
+    public static double DoubleBetween(this Random rand, double min, double max)
+    {
+        double value = min + (max - min) * rand.NextDouble();
+        return value;
+    }
 }
 
 }

@@ -5,6 +5,13 @@ namespace IoBTMessage.Models
 	{
 		public string status { get; set;  }
 		public string message { get; set;  }
+		public static SPEC_ActionStatus RandomSpec() {
+			return new SPEC_ActionStatus()
+			{
+				status = "Info",
+				message = "Sending a Info Object"
+			};
+		}
 	}
 
 	public class UDTO_ActionStatus : UDTO_Base

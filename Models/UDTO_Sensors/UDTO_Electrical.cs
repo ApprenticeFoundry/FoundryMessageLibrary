@@ -28,6 +28,20 @@ namespace IoBTMessage.Models
 		public double capacitance { get; set; }
 		public double temperature { get; set; }
 
+		public static SPEC_Electrical RandomSpec()
+		{
+			var gen = new MockDataGenerator();
+			return new SPEC_Electrical()
+			{
+				voltage = gen.GenerateDouble(60, 90),
+				current = gen.GenerateDouble(97.8, 99.3),
+				resistance = gen.GenerateDouble(1260, 9010),
+				wattage = gen.GenerateDouble(60, 90),
+				capacitance = gen.GenerateDouble(97.8, 99.3),
+				temperature = gen.GenerateDouble(1260, 9010),
+			};
+		}
+
 	}
 
 	[System.Serializable]

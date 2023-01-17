@@ -5,6 +5,16 @@ namespace IoBTMessage.Models
 		public string toUser { get; set; }
 		public string fromUser { get; set; }
 		public string message { get; set; }
+
+		public static SPEC_ChatMessage RandomSpec() {
+			var gen = new MockDataGenerator();
+			return new SPEC_ChatMessage()
+			{
+				toUser = gen.GenerateName(),
+				fromUser = gen.GenerateName(),
+				message = gen.GenerateText(),
+			};
+		}
 	}
 	
 	[System.Serializable]

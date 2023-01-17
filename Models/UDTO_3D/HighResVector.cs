@@ -9,6 +9,17 @@ namespace IoBTMessage.Models
 		public double X { get; set; } = 0;
 		public double Y { get; set; } = 0;
 		public double Z { get; set; } = 0;
+
+		public static SPEC_HighResVector RandomSpec()
+		{
+			var gen = new MockDataGenerator();
+			return new SPEC_HighResVector()
+			{
+				X = gen.GenerateDouble(-90, 90),
+				Y = gen.GenerateDouble(-90, 90),
+				Z = gen.GenerateDouble(-90, 90),
+			};
+		}
 	}
 
 	[System.Serializable]

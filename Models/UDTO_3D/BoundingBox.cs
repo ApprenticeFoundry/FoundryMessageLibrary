@@ -9,6 +9,17 @@ namespace IoBTMessage.Models
 		public double pinX{ get; set; }
 		public double pinY{ get; set; }
 		public double pinZ{ get; set; }
+
+		public static SPEC_BoundingBox RandomSpec()
+		{
+			var gen = new MockDataGenerator();
+			return new SPEC_BoundingBox()
+			{
+				width = gen.GenerateDouble(10, 90),
+				height = gen.GenerateDouble(10, 90),
+				depth = gen.GenerateDouble(10, 90),
+			};
+		}
 	}
 	[System.Serializable]
 	public class BoundingBox

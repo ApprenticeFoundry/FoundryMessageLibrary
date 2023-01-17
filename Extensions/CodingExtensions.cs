@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace IoBTMessage.Models
@@ -87,6 +90,39 @@ namespace IoBTMessage.Models
 				action(element);
 		}
 
+		public static async Task ForEachAsync<T>(this List<T> list, Func<T, Task> func)
+		{
+			foreach (var value in list)
+			{
+				await func(value);
+			}
+		}
+
+		public static string Dehydrate<T>(T target, bool includeFields) where T : class
+		{
+			var options = new JsonSerializerOptions()
+			{
+				IncludeFields = includeFields,
+				IgnoreReadOnlyFields = true,
+				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+			};
+
+			var result = JsonSerializer.Serialize(target, typeof(T), options);
+			return result;
+		}
+
+		public static string Dehydrate(object target, Type type, bool includeFields) 
+		{	
+			var options = new JsonSerializerOptions()
+			{
+				IncludeFields = includeFields,
+				IgnoreReadOnlyFields = true,
+				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+			};
+			var result = JsonSerializer.Serialize(target, type, options);
+			return result;
+		}
+
 		public static string EncodeFieldNamesAsCSV(this object source, char d = '\u002C')
 		{
 			var list = new List<string>();
@@ -107,7 +143,7 @@ namespace IoBTMessage.Models
 			foreach (FieldInfo field in flist)
 			{
 				var value = field.GetValue(source);
-				list.Add(value.ToString());
+				list.Add(value?.ToString() ?? "");
 			}
 			return string.Join(d,list);
 		}

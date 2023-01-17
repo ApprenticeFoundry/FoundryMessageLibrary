@@ -15,6 +15,17 @@ namespace IoBTMessage.Models
 		public SPEC_HighResVector acc { get; set; }
 		public SPEC_HighResVector gyro { get; set; }
 		public SPEC_HighResVector mag { get; set; }
+
+		public static SPEC_IMUReading RandomSpec()
+		{
+			var gen = new MockDataGenerator();
+			return new SPEC_IMUReading()
+			{
+				acc = SPEC_HighResVector.RandomSpec(),
+				gyro = SPEC_HighResVector.RandomSpec(),
+				mag = SPEC_HighResVector.RandomSpec(),
+			};
+		}
 	}
 
 	[System.Serializable]

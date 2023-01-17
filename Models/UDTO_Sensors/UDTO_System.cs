@@ -27,6 +27,20 @@ namespace IoBTMessage.Models
 		public double memorySize { get; set; }
 		public double diskUsage { get; set; }
 		public double diskSize { get; set; }
+
+		public static SPEC_System RandomSpec()
+		{
+			var gen = new MockDataGenerator();
+			return new SPEC_System()
+			{
+				cpuUsage = gen.GenerateDouble(0, 100),
+				cpuSize = gen.GenerateDouble(0, 1),
+				memoryUsage = gen.GenerateDouble(0,100),
+				memorySize = gen.GenerateDouble(0, 1),
+				diskUsage = gen.GenerateDouble(0, 100),
+				diskSize = gen.GenerateDouble(0, 1),
+			};
+		}
 	}
 
 	[System.Serializable]

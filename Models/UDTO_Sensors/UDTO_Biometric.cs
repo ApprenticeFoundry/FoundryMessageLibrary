@@ -31,12 +31,14 @@ namespace IoBTMessage.Models
 		public static SPEC_Biometric RandomSpec() 
 		{
 			var gen = new MockDataGenerator();
-			
 			return new SPEC_Biometric()
 			{
 				heartRate = gen.GenerateDouble(60,90),
 				temperature = gen.GenerateDouble(97.8,99.3),
 				stepCount = gen.GenerateDouble(1260,9010),
+				sleepScore = gen.GenerateDouble(60, 90),
+				stressCalculation = gen.GenerateDouble(97.8, 99.3),
+				fitnessScore = gen.GenerateDouble(1260, 9010),
 			};
 		}
 	}

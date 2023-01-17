@@ -5,6 +5,17 @@ namespace IoBTMessage.Models
 		public string symbol { get; set;  }
 		public SPEC_HighResPosition position { get; set;  }
 		public SPEC_BoundingBox boundingBox { get; set;  }
+
+		public static SPEC_Body RandomSpec()
+		{
+			var gen = new MockDataGenerator();
+			return new SPEC_Body()
+			{
+				symbol = gen.GenerateSymbol(),
+				position = SPEC_HighResPosition.RandomSpec(),
+				boundingBox = SPEC_BoundingBox.RandomSpec(),
+			};
+		}
 	}
 
 	[System.Serializable]

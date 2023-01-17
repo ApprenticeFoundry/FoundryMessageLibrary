@@ -13,6 +13,17 @@ namespace IoBTMessage.Models
 		public List<SPEC_Body> bodies { get; set; }
 		public List<SPEC_Label> labels { get; set; }
 		public List<SPEC_Relationship> relationships { get; set; }
+
+		public static SPEC_Platform RandomSpec()
+		{
+			var gen = new MockDataGenerator();
+			return new SPEC_Platform()
+			{
+				offset = SPEC_HighResOffset.RandomSpec(),
+				position = SPEC_Position.RandomSpec(),
+				boundingBox = SPEC_BoundingBox.RandomSpec(),
+			};
+		}
 	}
 
 	[System.Serializable]

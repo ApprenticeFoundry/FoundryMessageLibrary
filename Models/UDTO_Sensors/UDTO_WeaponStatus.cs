@@ -18,7 +18,25 @@ using System.Threading.Tasks;
 
 namespace IoBTMessage.Models
 {
+	public class SPEC_WeaponStatus : SPEC_SensorBase
+	{
+		public int currentAmmoCount;
+		public string type;
+		public SPEC_IMUReading IMU;
+		public double targetDistance; //assume meters
 
+		public static SPEC_WeaponStatus RandomSpec()
+		{
+			var gen = new MockDataGenerator();
+			return new SPEC_WeaponStatus()
+			{
+				currentAmmoCount = gen.GenerateInt(0, 90),
+				IMU = SPEC_IMUReading.RandomSpec(),
+				targetDistance = gen.GenerateDouble(60, 410),
+			};
+		}
+
+	}
 
 
 	[System.Serializable]

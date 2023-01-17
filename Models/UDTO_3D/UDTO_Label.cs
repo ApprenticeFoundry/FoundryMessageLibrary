@@ -9,6 +9,16 @@ namespace IoBTMessage.Models
 		public List<string> details;
 		public string targetGuid;
 		public SPEC_HighResPosition position;
+
+		public static SPEC_Label RandomSpec()
+		{
+			var gen = new MockDataGenerator();
+			return new SPEC_Label()
+			{
+				text = gen.GenerateText(),
+				position = SPEC_HighResPosition.RandomSpec(),
+			};
+		}
 	}
 	
 	[System.Serializable]
