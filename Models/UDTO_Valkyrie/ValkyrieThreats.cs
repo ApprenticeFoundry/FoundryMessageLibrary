@@ -7,7 +7,8 @@ namespace IoBTMessage.Models
 	public class SPEC_ValkyrieThreats
 	{
 
-        public List<string> hiddenThreatIds { get; set; } = new List<string>();
+		public List<string> hiddenThreatIds { get; set; } = new List<string>();
+		public List<SPEC_Objective> threats = new List<SPEC_Objective>();
 	}
 
 	[System.Serializable]
@@ -15,27 +16,28 @@ namespace IoBTMessage.Models
 	{
 
 		public List<string> hiddenThreatIds = new List<string>();
+		public List<UDTO_Objective> threats = new List<UDTO_Objective>();
 
 		public ValkyrieThreats()
 		{
 		}
 
-		public void AddThreat(string threat) 
+		public void AddThreat(string threat)
 		{
 		}
-		public void RemoveThreat(string threat) 
+		public void RemoveThreat(string threat)
 		{
 		}
 
 		public bool IsThreatVisible(string id)
 		{
-			        // var notFound = hiddenThreatIds.FindIndex(x =>
-					// {
-					// 	var threatId = x.Split("|")[0];
+			// var notFound = hiddenThreatIds.FindIndex(x =>
+			// {
+			// 	var threatId = x.Split("|")[0];
 
-					// 	Console.WriteLine($"x={x}, threatId={threatId} searching for {threat.ThreatId}");
-					// 	return threatId.Matches(id);
-					// }) < 0;
+			// 	Console.WriteLine($"x={x}, threatId={threatId} searching for {threat.ThreatId}");
+			// 	return threatId.Matches(id);
+			// }) < 0;
 
 			return true;
 		}
