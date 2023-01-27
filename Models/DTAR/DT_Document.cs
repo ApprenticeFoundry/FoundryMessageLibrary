@@ -1,5 +1,14 @@
 ﻿namespace IoBTMessage.Models
 {
+	public class SPEC_Document : SPEC_Title
+	{
+		public string status { get; set; }
+		public string filename { get; set; }
+		public string docType { get; set; }
+		public string url { get; set; }
+		public BoundingBox boundingbox;
+
+	}
 
 	[System.Serializable]
 	public class DT_Document : DT_Title
@@ -13,11 +22,11 @@
 
 
 		public DT_Document() : base()
-		{	
+		{
 		}
 		public bool IsReadyToUse()
 		{
-			if ( status == "LocalCache" ) return true;
+			if (status == "LocalCache") return true;
 			return false;
 		}
 		public string MarkAsNotReferences()
