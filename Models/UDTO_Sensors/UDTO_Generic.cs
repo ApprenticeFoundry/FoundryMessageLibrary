@@ -6,7 +6,7 @@ namespace IoBTMessage.Models
 	{
 		public string type { get; set; }
 		public string routing { get; set; }
-		public object entity { get; set; }
+		public object entity { get; set; } = "EMPTY";
 	}
 
 	[System.Serializable]
@@ -14,6 +14,6 @@ namespace IoBTMessage.Models
 	{
 		public string type;
 		public string routing;
-		public object entity;
+		public object entity = "EMPTY";
 	}
 }

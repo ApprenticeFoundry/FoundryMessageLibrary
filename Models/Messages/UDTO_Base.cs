@@ -36,7 +36,6 @@ namespace IoBTMessage.Models
 
 		public UDTO_Base()
 		{
-			refGuid = Guid.NewGuid().ToString();
 			this.initialize(null);
 		}
 

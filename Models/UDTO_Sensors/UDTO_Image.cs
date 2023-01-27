@@ -13,8 +13,8 @@ namespace IoBTMessage.Models
 		public static SPEC_Image RandomSpec()
 		{
 			var gen = new MockDataGenerator();
-			var width = 100 * gen.GenerateInt(1, 5);
-			var height = 100 * gen.GenerateInt(1, 5);
+			var width = 50 * gen.GenerateInt(0, 11);
+			var height = 50 * gen.GenerateInt(0, 11);
 			return new SPEC_Image()
 			{
 				url = $"https://picsum.photos/{width}/{height}",
