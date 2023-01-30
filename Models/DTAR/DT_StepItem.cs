@@ -2,6 +2,11 @@
 
 namespace IoBTMessage.Models
 {
+	public class SPEC_StepItem : SPEC_Hero
+	{
+		public int itemNumber { get; set; }
+
+	}
 	[System.Serializable]
 	public class DT_StepItem : DT_Hero
 	{
@@ -14,7 +19,7 @@ namespace IoBTMessage.Models
 
 		public override List<DT_Document> CollectDocuments(List<DT_Document> list, bool deep)
 		{
-			base.CollectDocuments(list,deep);
+			base.CollectDocuments(list, deep);
 
 			return list;
 		}

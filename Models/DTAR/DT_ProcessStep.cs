@@ -2,6 +2,14 @@
 using System.Linq;
 namespace IoBTMessage.Models
 {
+	public class SPEC_ProcessStep : SPEC_Hero
+	{
+		public int memberCount { get; set; }
+		public int stepNumber { get; set; }
+
+		// public List<SPEC_StepItem> details { get; set; }
+
+	}
 
 	[System.Serializable]
 	public class DT_ProcessStep : DT_Hero
@@ -37,36 +45,36 @@ namespace IoBTMessage.Models
 
 		public override List<DT_Document> CollectDocuments(List<DT_Document> list, bool deep)
 		{
-			base.CollectDocuments(list,deep);
-			if ( !deep) return list;
+			base.CollectDocuments(list, deep);
+			if (!deep) return list;
 
 			details?.ForEach(step =>
 			{
-				step.CollectDocuments(list,deep);
+				step.CollectDocuments(list, deep);
 			});
 			return list;
 		}
 
 		public override List<DT_AssetReference> CollectAssetReferences(List<DT_AssetReference> list, bool deep)
 		{
-			base.CollectAssetReferences(list,deep);
-			if ( !deep) return list;
+			base.CollectAssetReferences(list, deep);
+			if (!deep) return list;
 
 			details?.ForEach(step =>
 			{
-				step.CollectAssetReferences(list,deep);
+				step.CollectAssetReferences(list, deep);
 			});
 
 			return list;
 		}
 		public override List<DT_ComponentReference> CollectComponentReferences(List<DT_ComponentReference> list, bool deep)
 		{
-			base.CollectComponentReferences(list,deep);
-			if ( !deep) return list;
+			base.CollectComponentReferences(list, deep);
+			if (!deep) return list;
 
 			details?.ForEach(step =>
 			{
-				step.CollectComponentReferences(list,deep);
+				step.CollectComponentReferences(list, deep);
 			});
 			return list;
 		}
