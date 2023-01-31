@@ -1,21 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <!-- <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
+    <Nullable>disable</Nullable> -->
         
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Company>SAIC IoBT team</Company>
     <Copyright>Copyright © 2020</Copyright>
-    <AssemblyVersion>7.2.0.0</AssemblyVersion>
+    <AssemblyVersion>7.7.0.0</AssemblyVersion>
     <Title>IoBT Message Library</Title>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+    
   <ItemGroup>
-    <PackageReference Include="GeoJSON.Net" Version="1.2.19" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+    <PackageReference Include="System.Text.Json" Version="7.0.0" />
   </ItemGroup>
-
 </Project>
