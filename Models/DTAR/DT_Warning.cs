@@ -1,6 +1,9 @@
 namespace IoBTMessage.Models
 {
-    public class DT_Warning : DT_StatusText
+	public class DO_Warning : DO_StatusText
+	{
+	}
+	public class DT_Warning : DT_StatusText
 	{
 
 

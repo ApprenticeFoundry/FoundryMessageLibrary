@@ -1,33 +1,42 @@
 using System.Collections.Generic;
-
+using IoBTMessage.Extensions;
 namespace IoBTMessage.Models
 {
+	public class DO_Hero : DO_Title
+	{
+		public DO_InfoCard infoCard { get; set; }
+		public DO_AssetFile heroImage { get; set; }
+		public List<DO_AssetReference> assetReferences { get; set; }
+		public List<DT_HeroReference> heroReferences { get; set; }
+	}
+
 	[System.Serializable]
 	public class DT_Hero : DT_Title
 	{
 		public DT_InfoCard infoCard;
 		public DT_AssetFile heroImage;
 		public List<DT_AssetReference> assetReferences;
-		public List<DT_ComponentReference> componentReferences;
-
+		public List<DT_HeroReference> heroReferences;
 
 
 		public DT_Hero() : base()
 		{
 		}
 
+		public virtual List<DT_Hero> Children()
+		{
+			return new List<DT_Hero>();
+		}
 
-
-		public T AddAssetReference<T>(T item) where T : DT_AssetReference
+	public T AddAssetReference<T>(T item) where T : DT_AssetReference
 		{
 			assetReferences ??= new List<DT_AssetReference>();
-			
 
-			if ( assetReferences.IndexOf(item) == -1 )
+			if (assetReferences.IndexOf(item) == -1)
 			{
 				item.heroGuid = this.guid;
 				assetReferences.Add(item);
-			} 
+			}
 			else
 			{
 				$"AddAssetReference Duplicate Item".WriteLine(System.ConsoleColor.Green);
@@ -36,17 +45,17 @@ namespace IoBTMessage.Models
 			return item;
 		}
 
-		public T AddComponentReference<T>(T item) where T : DT_ComponentReference
+		public T AddHeroReference<T>(T item) where T : DT_HeroReference
 		{
-			componentReferences ??= new List<DT_ComponentReference>();
+			heroReferences ??= new List<DT_HeroReference>();
 
-			if (componentReferences.IndexOf(item) == -1)
+			if (heroReferences.IndexOf(item) == -1)
 			{
-				componentReferences.Add(item);
+				heroReferences.Add(item);
 			}
 			else
 			{
-				$"AddComponentReference Duplicate Item".WriteLine(System.ConsoleColor.Green);
+				$"AddHeroReference Duplicate Item".WriteLine(System.ConsoleColor.Green);
 			}
 			return item;
 		}
@@ -65,16 +74,16 @@ namespace IoBTMessage.Models
 		public virtual List<DT_AssetReference> CollectAssetReferences(List<DT_AssetReference> list, bool deep)
 		{
 
-			if ( assetReferences != null )
+			if (assetReferences != null)
 				list.AddRange(assetReferences);
 
 			return list;
 		}
 
-		public virtual List<DT_ComponentReference> CollectComponentReferences(List<DT_ComponentReference> list, bool deep)
+		public virtual List<DT_HeroReference> CollectHeroReferences(List<DT_HeroReference> list, bool deep)
 		{
 
-			componentReferences?.ForEach(compRef =>
+			heroReferences?.ForEach(compRef =>
 			{
 				list.Add(compRef);
 			});

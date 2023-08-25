@@ -1,21 +1,89 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using IoBTMessage.Models;
+using IoBTMessage.Extensions;
+
 
 namespace IoBTMessage.Models
 {
-
-	public class DT_Target : DT_Searchable
+	[System.Serializable]
+	public abstract class DT_NetworkItem: DT_Searchable
 	{
+		public string system;
+		public bool IsVisited = false;
+	}
+
+	[System.Serializable]
+	public class DT_TargetLink: DT_NetworkItem
+	{
+		public string sourceGuid;
+		public string sinkGuid;
+
+		public DT_TargetLink()
+		{
+			this.type = "DT_TargetLink";
+		}
+
+		public static DT_TargetLink Create(DT_Target from, DT_Target to)
+		{
+			var link = new DT_TargetLink();
+			return link.Link(from, to);
+		}
+
+		public DT_TargetLink Link(DT_Target from, DT_Target to)
+		{
+			from.linkCount++;
+			to.linkCount++;
+			
+			this.sourceGuid = from.guid;
+			this.sinkGuid = to.guid;
+			this.name = $"{from.address} -- {to.address}";
+			this.title = $"{from.GetKey()} == {to.GetKey()}";
+			return this;
+		}
+		public bool IsValid()
+		{
+			return sourceGuid != null && sinkGuid != null;
+		}
+		public bool IncludesTarget(DT_Target target)
+		{
+			if ( IsValid()) 
+				return sourceGuid == target.guid || sinkGuid == target.guid;
+			return false;
+		}
+
+		public string OtherTarget(DT_Target target)
+		{
+			if (sourceGuid == target.guid) 
+				return sinkGuid;
+			if (sinkGuid == target.guid) 
+				return sourceGuid;
+			return null;
+		}
+
+	}
+
+	[System.Serializable]
+	public class DT_Target : DT_NetworkItem
+	{
+		public string address;
+		public string domain;
+		public int linkCount;
+		
 		public DT_Part part;
-		public List<DT_AssetFile> models;
-		public List<DT_AssetFile> images;
-		public List<DT_Component> components;
-		public List<DT_Hero> procedures;
+		public DT_HeroReference heroReference;
+		public DT_AssetFile asset;
+		public List<string> threads;
+
+		public int x;
+		public int y;
+		public int z;
+
 
 		public DT_Target()
 		{
-			part = new DT_Part();
+			type = "DT_Target";
+			linkCount = 0;
 		}
 		public DT_Part CopyFrom(DT_Part source)
 		{
@@ -23,50 +91,45 @@ namespace IoBTMessage.Models
 			return this.part;
 		}
 
-
-		public List<DT_AssetFile> AddImage(DT_AssetFile image)
+		public DT_Part GetPart()
 		{
-			images ??= new List<DT_AssetFile>();
-			if (image != null)
-				images.Add(image);
-
-			return images;
+			part ??= new DT_Part() { partNumber = address };
+			return part;
 		}
 
-		public List<DT_AssetFile> AddModel(DT_AssetFile model)
+		public string GetKey()
 		{
-			models ??= new List<DT_AssetFile>();
-			if (model != null)
-				models.Add(model);
-
-			return models;
+			return $"{domain}:{address}";
 		}
 
-		public List<DT_AssetFile> CollectAssetFilesFrom(DT_Hero source, bool deep)
+		
+		public string FullKey()
 		{
-			var assets = source.CollectAssetFiles(new List<DT_AssetFile>(),deep).Where(obj => obj != null).ToList();
-			assets = assets.DistinctUsing(item => item.filename).ToList();
-
-			images ??= new List<DT_AssetFile>();
-			models ??= new List<DT_AssetFile>();
-
-			var justImages = assets.Where(item => item.IsImage()).ToList();
-			images.AddRange(justImages);
-
-
-			var justModels = assets.Where(item => item.IsModel()).ToList();
-			models.AddRange(justModels);
-
-			return assets;
+			var part = GetPart();
+			return $"{domain}:{part.ComputeTitle()}";
 		}
 
-		public void RemoveDuplicates()
+		public bool MatchPart(DT_Part other)
 		{
-			images ??= new List<DT_AssetFile>();
-			images = images.DistinctUsing(item => item.filename).ToList();
-
-			models ??= new List<DT_AssetFile>();
-			models = models.DistinctUsing(item => item.filename).ToList();
+			if (other == null) return false;
+			var part = GetPart();
+			if (part.partNumber != other.partNumber) return false;
+			if (part.serialNumber != other.serialNumber) return false;
+			if (part.version != other.version) return false;
+			if (part.referenceDesignation != other.referenceDesignation) return false;
+			return true;
 		}
+
+		public List<string> AddThread(string thread)
+		{
+			threads ??= new List<string>();
+			if (thread != null)
+				threads.Add(thread);
+
+			return threads;
+		}
+
+
+
 	}
 }

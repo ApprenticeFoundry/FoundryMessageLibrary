@@ -3,6 +3,15 @@ using System.Linq;
 namespace IoBTMessage.Models
 {
 
+	public class DO_ProcessStep : DO_Hero
+	{
+		public int memberCount { get; set; }
+		public int stepNumber { get; set; }
+
+		public List<DO_StepItem> details { get; set; }
+
+	}
+
 	[System.Serializable]
 	public class DT_ProcessStep : DT_Hero
 	{
@@ -18,12 +27,15 @@ namespace IoBTMessage.Models
 		{
 		}
 
+		public override List<DT_Hero> Children()
+		{
+			if ( details == null) return base.Children();
+			return details.Cast<DT_Hero>().ToList();
+		}
+
 		public T AddStepDetail<T>(T detail) where T : DT_StepItem
 		{
-			if (details == null)
-			{
-				details = new List<DT_StepItem>();
-			}
+			details ??= new List<DT_StepItem>();
 			detail.parentGuid = this.guid;
 
 			details.Add(detail);
@@ -37,36 +49,36 @@ namespace IoBTMessage.Models
 
 		public override List<DT_AssetFile> CollectAssetFiles(List<DT_AssetFile> list, bool deep)
 		{
-			base.CollectAssetFiles(list,deep);
-			if ( !deep) return list;
+			base.CollectAssetFiles(list, deep);
+			if (!deep) return list;
 
 			details?.ForEach(step =>
 			{
-				step.CollectAssetFiles(list,deep);
+				step.CollectAssetFiles(list, deep);
 			});
 			return list;
 		}
 
 		public override List<DT_AssetReference> CollectAssetReferences(List<DT_AssetReference> list, bool deep)
 		{
-			base.CollectAssetReferences(list,deep);
-			if ( !deep) return list;
+			base.CollectAssetReferences(list, deep);
+			if (!deep) return list;
 
 			details?.ForEach(step =>
 			{
-				step.CollectAssetReferences(list,deep);
+				step.CollectAssetReferences(list, deep);
 			});
 
 			return list;
 		}
-		public override List<DT_ComponentReference> CollectComponentReferences(List<DT_ComponentReference> list, bool deep)
+		public override List<DT_HeroReference> CollectHeroReferences(List<DT_HeroReference> list, bool deep)
 		{
-			base.CollectComponentReferences(list,deep);
-			if ( !deep) return list;
+			base.CollectHeroReferences(list, deep);
+			if (!deep) return list;
 
 			details?.ForEach(step =>
 			{
-				step.CollectComponentReferences(list,deep);
+				step.CollectHeroReferences(list, deep);
 			});
 			return list;
 		}

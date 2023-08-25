@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+using System;
+using System.Text.RegularExpressions;
 
 namespace IoBTMessage.Models
 {
@@ -9,7 +10,7 @@ namespace IoBTMessage.Models
 		public int height { get; set; }
 		public string url { get; set; }
 
-//https://stackoverflow.com/questions/60797390/generate-random-image-by-url
+		//https://stackoverflow.com/questions/60797390/generate-random-image-by-url
 		public static SPEC_Image RandomSpec()
 		{
 			var gen = new MockDataGenerator();
@@ -30,10 +31,8 @@ namespace IoBTMessage.Models
 		public int height;
 		public string url;
 
-
 		public UDTO_Image() : base()
 		{
 		}
-
 	}
 }

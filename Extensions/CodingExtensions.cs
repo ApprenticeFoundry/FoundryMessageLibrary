@@ -5,11 +5,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Web;
+using IoBTMessage.Models;
+using IoBTMessage.Units;
 
-namespace IoBTMessage.Models
+namespace IoBTMessage.Extensions
 {
 
 	public static class CodingExtensions
@@ -35,44 +38,7 @@ namespace IoBTMessage.Models
 		{
 			return items.GroupBy(property).Select(x => x.First());
 		}
-		public static bool IsImage(this DT_AssetFile doc)
-		{
-			var filename = doc.filename.ToLower();
-			if (filename.EndsWith("jpg"))
-				return true;
-			if (filename.EndsWith("png"))
-				return true;
-			return false;
-		}
 
-		public static bool IsModel(this DT_AssetFile doc)
-		{
-			var filename = doc.filename.ToLower();
-			if (filename.EndsWith("fbx"))
-				return true;
-			if (filename.EndsWith("glb"))
-				return true;
-			if (filename.EndsWith("obj"))
-				return true;
-			return false;
-		}
-
-		public static bool IsVideo(this DT_AssetFile doc)
-		{
-			var filename = doc.filename.ToLower();
-			if (filename.EndsWith("mp4"))
-				return true;
-			if (filename.EndsWith("mp3"))
-				return true;
-			if (filename.EndsWith("mov"))
-				return true;
-			return false;
-		}
-
-		public static void WriteTrace(this String str)
-		{
-			$"... {str}".WriteLine(ConsoleColor.DarkMagenta);
-		}
 
 		public static String UrlEncode(this String str)
 		{
@@ -98,28 +64,105 @@ namespace IoBTMessage.Models
 			}
 		}
 
+		public static object HydrateObject(Type type, string payload)
+		{
+			var node = JsonNode.Parse(payload);
+			if (node == null) return null;
+
+			using var stream = new MemoryStream();
+			using var writer = new Utf8JsonWriter(stream);
+			node.WriteTo(writer);
+			writer.Flush();
+
+			var options = UnitSpec.JsonHydrateOptions(true);
+			var result = JsonSerializer.Deserialize(stream.ToArray(), type, options);
+			return result;
+		}
+
+		public static object HydrateObject(string payloadType, string payload, Assembly assembly)
+		{
+
+			Type type = assembly.DefinedTypes.FirstOrDefault(item => item.Name == payloadType);
+			if (type == null) return null;
+
+			var node = JsonNode.Parse(payload);
+			if (node == null) return null;
+
+			using var stream = new MemoryStream();
+			using var writer = new Utf8JsonWriter(stream);
+			node.WriteTo(writer);
+			writer.Flush();
+
+			var options = UnitSpec.JsonHydrateOptions(true);
+			var result = JsonSerializer.Deserialize(stream.ToArray(), type, options);
+			return result;
+		}
+
+		public static ContextWrapper<T> HydrateWrapper<T>(string target, bool includeFields) where T : class
+		{
+			using var stream = new MemoryStream();
+			using var writer = new Utf8JsonWriter(stream);
+			var node = JsonNode.Parse(target);
+			node?.WriteTo(writer);
+			writer.Flush();
+
+			var options = UnitSpec.JsonHydrateOptions(includeFields);
+			var result = JsonSerializer.Deserialize<ContextWrapper<T>>(stream.ToArray(), options) as ContextWrapper<T>;
+
+			return result;
+		}
+
+		public static T Hydrate<T>(this string target, bool includeFields) where T : class
+		{
+			using var stream = new MemoryStream();
+			using var writer = new Utf8JsonWriter(stream);
+			var node = JsonNode.Parse(target);
+			node?.WriteTo(writer);
+			writer.Flush();
+
+			var options = UnitSpec.JsonHydrateOptions(includeFields);
+			var result = JsonSerializer.Deserialize<T>(stream.ToArray(), options) as T;
+
+			return result!;
+		}
+
+
+		public static List<T> HydrateList<T>(string target, bool includeFields) where T : class
+		{
+			using var stream = new MemoryStream();
+			using var writer = new Utf8JsonWriter(stream);
+			var node = JsonNode.Parse(target);
+			node?.WriteTo(writer);
+			writer.Flush();
+
+
+			var options = UnitSpec.JsonHydrateOptions(includeFields);
+			var result = JsonSerializer.Deserialize<List<T>>(stream.ToArray(), options) as List<T>;
+
+			return result!;
+		}
+
 		public static string Dehydrate<T>(T target, bool includeFields) where T : class
 		{
-			var options = new JsonSerializerOptions()
-			{
-				IncludeFields = includeFields,
-				IgnoreReadOnlyFields = true,
-				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-			};
 
+			var options = UnitSpec.JsonHydrateOptions(includeFields);
 			var result = JsonSerializer.Serialize(target, typeof(T), options);
 			return result;
 		}
 
-		public static string Dehydrate(object target, Type type, bool includeFields) 
-		{	
-			var options = new JsonSerializerOptions()
-			{
-				IncludeFields = includeFields,
-				IgnoreReadOnlyFields = true,
-				DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-			};
+		public static string Dehydrate(object target, Type type, bool includeFields)
+		{
+
+			var options = UnitSpec.JsonHydrateOptions(includeFields);
 			var result = JsonSerializer.Serialize(target, type, options);
+			return result;
+		}
+
+		public static string DehydrateList<T>(List<T> target, bool includeFields) where T : class
+		{
+
+			var options = UnitSpec.JsonHydrateOptions(includeFields);
+			var result = JsonSerializer.Serialize(target, options);
 			return result;
 		}
 
@@ -132,7 +175,7 @@ namespace IoBTMessage.Models
 			{
 				list.Add(field.Name);
 			}
-			return string.Join(d,list);
+			return string.Join(d, list);
 		}
 
 		public static string EncodeFieldDataAsCSV(this object source, char d = '\u002C')
@@ -145,7 +188,7 @@ namespace IoBTMessage.Models
 				var value = field.GetValue(source);
 				list.Add(value?.ToString() ?? "");
 			}
-			return string.Join(d,list);
+			return string.Join(d, list);
 		}
 
 		public static int DecodeFieldDataAsCSV(this object source, string[] data)
@@ -173,10 +216,11 @@ namespace IoBTMessage.Models
 				else if (field.FieldType == typeof(string))
 				{
 					field.SetValue(source, value);
-				} else 
+				}
+				else
 				{
 					throw new ArgumentException($"Cannot DecodeFieldDataAsCSV for {field.Name}");
-				} 
+				}
 			}
 			return flist.Count();
 		}
@@ -216,7 +260,7 @@ namespace IoBTMessage.Models
 			}
 		}
 
-		public static void CopyFieldsTo<T,U>(this T source, U dest)
+		public static void CopyFieldsTo<T, U>(this T source, U dest)
 		{
 			var flist1 = typeof(T).GetFields();
 			var flist2 = typeof(T).GetFields();

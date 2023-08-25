@@ -23,5 +23,14 @@ namespace IoBTMessage.Models
 			return null;
 		}
 
+		public ControlParameters Clone(ControlParameters others)	
+		{
+			lookup ??= new Dictionary<string, object>();
+			foreach (var item in others.lookup)
+				lookup[item.Key] = item.Value;
+			
+			return this;
+		}	
+
 	}
 }

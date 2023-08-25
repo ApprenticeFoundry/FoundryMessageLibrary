@@ -8,21 +8,22 @@
 // Estimated range to target (I want to try to calculate where that target goes on my COP)
 // Recognition data from the target after a shot (what did we just hit? DID we hit?)
 
+using IoBTMessage.Units;
+
 namespace IoBTMessage.Models
 {
 	public class SPEC_Environment : SPEC_SensorBase
 	{
-		public double temperature { get; set; }
+		public Temperature temperature { get; set; }
 		public double humidity { get; set; }
 		public double pressure { get; set; }
-		public SPEC_Direction wind { get; set; }
 
 		public static SPEC_Environment RandomSpec()
 		{
 			var gen = new MockDataGenerator();
 			return new SPEC_Environment()
 			{
-				temperature = gen.GenerateDouble(60, 90),
+				temperature = new Temperature(gen.GenerateDouble(60, 90)),
 				humidity = gen.GenerateDouble(97.8, 99.3),
 				pressure = gen.GenerateDouble(1260, 9010),
 			};
@@ -32,10 +33,8 @@ namespace IoBTMessage.Models
 	[System.Serializable]
 	public class UDTO_Environment : UDTO_SensorBase
 	{
-		public double temperature;
+		public Temperature temperature;
 		public double humidity;
 		public double pressure;
-		public UDTO_Direction wind;
-
 	}
 }

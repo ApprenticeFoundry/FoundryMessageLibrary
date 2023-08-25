@@ -1,5 +1,5 @@
-
 using System;
+using IoBTMessage.Extensions;
 
 // https://khalidabuhakmeh.com/convert-a-csharp-object-to-almost-any-format
 namespace IoBTMessage.Models

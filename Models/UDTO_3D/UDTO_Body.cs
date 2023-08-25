@@ -2,9 +2,9 @@ namespace IoBTMessage.Models
 {
 	public class SPEC_Body : SPEC_3D
 	{
-		public string symbol { get; set;  }
-		public SPEC_HighResPosition position { get; set;  }
-		public SPEC_BoundingBox boundingBox { get; set;  }
+		public string symbol { get; set; } = "";
+		public SPEC_HighResPosition position { get; set; }
+		public SPEC_BoundingBox boundingBox { get; set; }
 
 		public static SPEC_Body RandomSpec()
 		{
@@ -15,6 +15,20 @@ namespace IoBTMessage.Models
 				position = SPEC_HighResPosition.RandomSpec(),
 				boundingBox = SPEC_BoundingBox.RandomSpec(),
 			};
+		}
+
+		public SPEC_Body EstablishBox(double width = 1.0, double height = 1.0, double depth = 1.0, string units = "m")
+		{
+			boundingBox ??= new SPEC_BoundingBox();
+
+			boundingBox.Box(width, height, depth, units);
+			return this;
+		}
+		public SPEC_Body CreateBox(string name, double width = 1.0, double height = 1.0, double depth = 1.0, string units = "m")
+		{
+			this.type = "Box";
+			this.name = name;
+			return EstablishBox(width, height, depth, units);
 		}
 	}
 
@@ -35,8 +49,8 @@ namespace IoBTMessage.Models
 			base.CopyFrom(obj);
 
 			var body = obj as UDTO_Body;
-			this.symbol = body.symbol;
-			
+			this.symbol = body!.symbol;
+
 			if (this.position == null)
 			{
 				this.position = body.position;
@@ -57,14 +71,33 @@ namespace IoBTMessage.Models
 			return this;
 		}
 
+		public UDTO_Body EstablishLoc(double x = 0.0, double y = 0.0, double z = 0.0, string units = "m")
+		{
+			position ??= new HighResPosition();
+
+			position.Loc(x, y, z, units);
+			return this;
+		}
+		public UDTO_Body EstablishAng(double x = 0.0, double y = 0.0, double z = 0.0, string units = "r")
+		{
+			position ??= new HighResPosition();
+
+			position.Ang(x, y, z, units);
+			return this;
+		}
 		public UDTO_Body EstablishBox(double width = 1.0, double height = 1.0, double depth = 1.0, string units = "m")
 		{
-			if (boundingBox == null)
-			{
-				boundingBox = new BoundingBox();
-			}
-	
+			boundingBox ??= new BoundingBox();
+
 			boundingBox.Box(width, height, depth, units);
+			return this;
+		}
+
+		public UDTO_Body EstablishPiv(double px = 0.0, double py = 0.0, double pz = 0.0, string units = "m")
+		{
+			boundingBox ??= new BoundingBox();
+
+			boundingBox.Pin(px, py, pz, units);
 			return this;
 		}
 

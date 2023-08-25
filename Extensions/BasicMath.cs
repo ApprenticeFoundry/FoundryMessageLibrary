@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IoBTMessage.Models
+namespace IoBTMessage.Extensions
 {
 static public class BasicMath
 {

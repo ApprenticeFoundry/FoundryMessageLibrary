@@ -3,6 +3,12 @@
 namespace IoBTMessage.Models
 {
 
+	public class DO_Sensor : DO_Hero
+	{
+		public DT_Part part { get; set; }
+		public string systemName { get; set; }
+	}
+
 	public class DT_Sensor : DT_Hero, ISystem
 	{
 		public DT_Part part;

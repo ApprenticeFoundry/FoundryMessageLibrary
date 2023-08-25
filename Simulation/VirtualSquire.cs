@@ -1,3 +1,5 @@
+using IoBTMessage.Units;
+
 namespace IoBTMessage.Models
 
 {
@@ -12,10 +14,10 @@ namespace IoBTMessage.Models
 		public UDTO_Observation LastObservation { get; set; }
 		public UDTO_Biometric LastBiometric { get; set; }
 
-		protected SpeedU speed { get; set; } = new SpeedU();
-		protected AngleU heading { get; set; } = new AngleU();
-		protected AngleU faceing { get; set; } = new AngleU();
-		protected AngleU turnAngle { get; set; } = new AngleU();
+		protected Speed speed { get; set; } = new Speed(0);
+		protected Angle heading { get; set; } = new Angle(0);
+		protected Angle faceing { get; set; } = new Angle(0);
+		protected Angle turnAngle { get; set; } = new Angle(0);
 
 		protected bool isPaused { get; set; } = false;
 
@@ -37,9 +39,9 @@ namespace IoBTMessage.Models
 				this.CurrentPosition.panID = PanID;
 			}
 
-			this.Speed_MetersPerSecond(source.speed.MetersPerSecond());
-			this.Faceing_Degrees(source.faceing.Degrees());
-			this.Heading_Degrees(source.heading.Degrees());
+			// this.Speed_MetersPerSecond(source.speed.MetersPerSecond());
+			// this.Faceing_Degrees(source.faceing.Degrees());
+			// this.Heading_Degrees(source.heading.Degrees());
 
 			if (source.LastBiometric != null)
 			{
@@ -74,29 +76,17 @@ namespace IoBTMessage.Models
 			return this;
 		}
 
-		public VirtualSquire Speed(SpeedU value)
+		public VirtualSquire Speed(Speed value)
 		{
-			speed.MetersPerSecond(value.MetersPerSecond());
+			speed = value;
 			return this;
 		}
 
-		public VirtualSquire Speed_MetersPerSecond(double value)
-		{
-			speed.MetersPerSecond(value);
-			return this;
-		}
 
-		public VirtualSquire Speed_MilesPerHour(double value)
-		{
-			speed.MilesPerHour(value);
-			return this;
-		}
 
-		public VirtualSquire Speed_KilometersPerHour(double value)
-		{
-			speed.KilometersPerHour(value);
-			return this;
-		}
+
+
+	
 		public VirtualSquire Faceing_Degrees(double faceing)
 		{
 			this.faceing.Degrees(faceing);
@@ -108,21 +98,16 @@ namespace IoBTMessage.Models
 			return this;
 		}
 
-		public VirtualSquire Heading_Direction(Direction dir)
-		{
-			this.heading.Degrees((double)dir);
-			return this;
-		}
 
-		public VirtualSquire Turn_Degrees(double angle)
-		{
-			this.heading.Degrees(this.heading.Degrees() + angle);
-			return this;
-		}
+		// public VirtualSquire Turn_Degrees(double angle)
+		// {
+		// 	this.heading.Degrees(this.heading.Degrees() + angle);
+		// 	return this;
+		// }
 
-		public VirtualSquire Turn_Angle(AngleU angle)
+		public VirtualSquire Turn_Angle(Angle angle)
 		{
-			this.turnAngle.Degrees(angle.Degrees());
+			this.turnAngle = angle;
 			return this;
 		}
 

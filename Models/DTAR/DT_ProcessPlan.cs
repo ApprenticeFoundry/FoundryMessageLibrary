@@ -5,6 +5,15 @@ namespace IoBTMessage.Models
 {
 
 
+	public class DO_ProcessPlan : DO_Hero
+	{
+		public int memberCount { get; set; }
+		public string systemName { get; set; }
+
+		public List<DO_ProcessStep> steps;
+
+	}
+
 	[System.Serializable]
 	public class DT_ProcessPlan : DT_Hero, ISystem
 	{
@@ -19,12 +28,15 @@ namespace IoBTMessage.Models
 		{
 		}
 
+		public override List<DT_Hero> Children()
+		{
+			if (steps == null) return base.Children();
+			return steps.Select(item => (DT_Hero)item).ToList();
+		}
+
 		public DT_ProcessStep AddProcessStep(DT_ProcessStep step)
 		{
-			if (steps == null)
-			{
-				steps = new List<DT_ProcessStep>();
-			}
+			steps ??= new List<DT_ProcessStep>();
 			step.parentGuid = this.guid;
 
 			steps.Add(step);
@@ -35,37 +47,37 @@ namespace IoBTMessage.Models
 
 		public override List<DT_AssetFile> CollectAssetFiles(List<DT_AssetFile> list, bool deep)
 		{
-			base.CollectAssetFiles(list,deep);
-			if ( !deep) return list;
+			base.CollectAssetFiles(list, deep);
+			if (!deep) return list;
 
 			steps?.ForEach(step =>
 			{
-				step.CollectAssetFiles(list,deep);
+				step.CollectAssetFiles(list, deep);
 			});
 			return list;
 		}
 
 		public override List<DT_AssetReference> CollectAssetReferences(List<DT_AssetReference> list, bool deep)
 		{
-			base.CollectAssetReferences(list,deep);
-			if ( !deep) return list;
-			
+			base.CollectAssetReferences(list, deep);
+			if (!deep) return list;
+
 			steps?.ForEach(step =>
 			{
-				step.CollectAssetReferences(list,deep);
+				step.CollectAssetReferences(list, deep);
 			});
 
 			return list;
 		}
 
-		public override List<DT_ComponentReference> CollectComponentReferences(List<DT_ComponentReference> list, bool deep)
+		public override List<DT_HeroReference> CollectHeroReferences(List<DT_HeroReference> list, bool deep)
 		{
-			base.CollectComponentReferences(list,deep);
-			if ( !deep) return list;
+			base.CollectHeroReferences(list, deep);
+			if (!deep) return list;
 
 			steps?.ForEach(step =>
 			{
-				step.CollectComponentReferences(list,deep);
+				step.CollectHeroReferences(list, deep);
 			});
 			return list;
 		}
@@ -97,6 +109,7 @@ namespace IoBTMessage.Models
 			var result = (DT_ProcessPlan)this.MemberwiseClone();
 			result.steps = null;
 			result.assetReferences = null;
+			result.heroImage = this.heroImage;
 
 			return result;
 		}

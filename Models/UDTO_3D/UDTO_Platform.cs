@@ -6,13 +6,12 @@ namespace IoBTMessage.Models
 {
 	public class SPEC_Platform : SPEC_3D
 	{
-		public SPEC_Position position { get; set; }
-		public SPEC_BoundingBox boundingBox { get; set; }
-		public SPEC_HighResOffset offset { get; set; }
+		public SPEC_Position position { get; set; } = new SPEC_Position();
+		public SPEC_BoundingBox boundingBox { get; set; } = new SPEC_BoundingBox();
+		public SPEC_HighResOffset offset { get; set; } = new SPEC_HighResOffset();
+		public List<SPEC_Body> bodies { get; set; } = new List<SPEC_Body>();
+		public List<SPEC_Label> labels { get; set; } = new List<SPEC_Label>();
 
-		public List<SPEC_Body> bodies { get; set; }
-		public List<SPEC_Label> labels { get; set; }
-		public List<SPEC_Relationship> relationships { get; set; }
 
 		public static SPEC_Platform RandomSpec()
 		{
@@ -33,20 +32,24 @@ namespace IoBTMessage.Models
 		public BoundingBox boundingBox;
 		public HighResOffset offset;
 
+		public List<UDTO_Platform> platforms = new();
+		public List<UDTO_Body> bodies = new();
+		public List<UDTO_Label> labels = new();
 
-		private readonly Dictionary<string, object> _lookup = new Dictionary<string, object>();
+		public UDTO_Platform() : base()
+		{
+			uniqueGuid = Guid.NewGuid().ToString();
+			type = UDTO_Base.asTopic<UDTO_Platform>();
+			position = new UDTO_Position();
+			offset = new HighResOffset();
+			boundingBox = new BoundingBox();
+		}
 
 
 		public UDTO_Platform EstablishBox(string name, double width = 1.0, double height = 1.0, double depth = 1.0, string units = "m")
 		{
 			this.name = name;
-			boundingBox = new BoundingBox()
-			{
-				units = units,
-				width = width,
-				height = height,
-				depth = depth,
-			};
+			boundingBox = new BoundingBox(width,height,depth,units);
 			position = new UDTO_Position();
 			offset = new HighResOffset();
 			return this;
@@ -54,137 +57,49 @@ namespace IoBTMessage.Models
 
 
 
-		public T CreateUsingDTBASE<T>(DT_Base obj) where T : UDTO_3D
-		{
-			return CreateUsing<T>(obj.name, obj.guid);
-		}
-
-		public UDTO_Body CreateCylinder(DT_Base obj, double width = 1.0, double height = 1.0, double depth = 1.0, string units = "m")
-		{
-			var result = CreateUsingDTBASE<UDTO_Body>(obj);
-			return result.CreateCylinder(obj.name, width, height, depth, units);
-		}	
-
-		public UDTO_Body CreateBlock(DT_Base obj, double width = 1.0, double height = 1.0, double depth = 1.0, string units = "m")
-		{
-			var result = CreateUsingDTBASE<UDTO_Body>(obj);
-			return result.CreateBox(obj.name, width, height, depth, units);
-		}		
-
-		public UDTO_Body CreateSphere(DT_Base obj, double width = 1.0, double height = 1.0, double depth = 1.0, string units = "m")
-		{
-			var result = CreateUsingDTBASE<UDTO_Body>(obj);
-			return result.CreateSphere(obj.name, width, height, depth, units);
-		}	
-
-		public UDTO_Body CreateGlb(DT_Base obj, string url, double width = 1.0, double height = 1.0, double depth = 1.0, string units = "m")
-		{
-			var result = CreateUsingDTBASE<UDTO_Body>(obj);
-			return result.CreateGlb(url, width, height, depth, units);
-		}
-
-		public UDTO_Label CreateLabel(DT_Base obj, string text, double xLoc = 0.0, double yLoc = 0.0, double zLoc = 0.0, string units = "m")
-		{
-			var result = CreateUsingDTBASE<UDTO_Label>(obj);
-			return result.CreateTextAt(text, xLoc, yLoc, zLoc, units);
-		}
-
-#if UNITY
-		public List<UDTO_Body> bodies;
-#else
-		public List<UDTO_Body> bodies
-		{
-			get
-			{
-				return FindList<UDTO_Body>();
-			}
-			set
-			{
-				if (value != null)
-					value.ForEach(item => AddRefreshOrDelete<UDTO_Body>(item, false));
-				else
-					ClearLookup<UDTO_Body>();
-			}
-		}
-
-
-#endif
 
 
 
 
-#if UNITY
-		public List<UDTO_Label> labels;
-#else
-		public List<UDTO_Label> labels
-		{
-			get
-			{
-				return FindList<UDTO_Label>();
-			}
-			set
-			{
-				if (value != null)
-					value.ForEach(item => AddRefreshOrDelete<UDTO_Label>(item, false));
-				else
-					ClearLookup<UDTO_Label>();
-			}
-		}
-#endif
+		//public void Merge(UDTO_Platform platform)
+		//{
+		//	if (platform.position != null)
+		//	{
+		//		this.position = platform.position;
+		//	}
+		//	if (platform.boundingBox != null)
+		//	{
+		//		this.boundingBox = platform.boundingBox;
+		//	}
+		//	if (platform.offset != null)
+		//	{
+		//		this.offset = platform.offset;
+		//	}
 
+		//	platform.bodies.ForEach(body =>
+		//	{
+		//		AddRefreshOrDelete<UDTO_Body>(body);
+		//	});
+		//	platform.bodies = null;
 
-#if UNITY
-		public List<UDTO_Relationship> relationships;
-#else
-		public List<UDTO_Relationship> relationships
-		{
-			get
-			{
-				return FindList<UDTO_Relationship>();
-			}
-			set
-			{
-				if (value != null)
-					value.ForEach(item => AddRefreshOrDelete<UDTO_Relationship>(item, false));
-				else
-					ClearLookup<UDTO_Relationship>();
-			}
-		}
-#endif
+		//	platform.labels.ForEach(label =>
+		//	{
+		//		AddRefreshOrDelete<UDTO_Label>(label);
+		//	});
+		//	platform.labels = null;
 
-		public void Merge(UDTO_Platform platform)
-		{
-			if (platform.position != null)
-			{
-				this.position = platform.position;
-			}
-			if (platform.boundingBox != null)
-			{
-				this.boundingBox = platform.boundingBox;
-			}
-			if (platform.offset != null)
-			{
-				this.offset = platform.offset;
-			}
+		//	platform.datums.ForEach(datum =>
+		//	{
+		//		AddRefreshOrDelete<UDTO_Datum>(datum);
+		//	});
+		//	platform.datums = null;
 
-			platform.bodies.ForEach(body =>
-			{
-				AddRefreshOrDelete<UDTO_Body>(body);
-			});
-			platform.bodies = null;
-
-			platform.labels.ForEach(label =>
-			{
-				AddRefreshOrDelete<UDTO_Label>(label);
-			});
-			platform.labels = null;
-
-			platform.relationships.ForEach(relationship =>
-			{
-				AddRefreshOrDelete<UDTO_Relationship>(relationship);
-			});
-			platform.relationships = null;
-		}
+		//	platform.relationships.ForEach(relationship =>
+		//	{
+		//		AddRefreshOrDelete<UDTO_Relationship>(relationship);
+		//	});
+		//	platform.relationships = null;
+		//}
 
 
 		public UDTO_Platform SetPositionTo(UDTO_Position loc)
@@ -193,21 +108,13 @@ namespace IoBTMessage.Models
 			return this;
 		}
 
-		public UDTO_Platform()
-		{
-			CreateLookup<UDTO_Body>();
-			CreateLookup<UDTO_Label>();
-			CreateLookup<UDTO_Relationship>();
 
-			uniqueGuid = Guid.NewGuid().ToString();
-			type = UDTO_Base.asTopic<UDTO_Platform>();
-		}
 
 		public UDTO_Platform Flush()
 		{
-			ClearLookup<UDTO_Body>();
-			ClearLookup<UDTO_Label>();
-			ClearLookup<UDTO_Relationship>();
+			platforms.Clear();
+			bodies.Clear();
+			labels.Clear();
 			return this;
 		}
 
@@ -216,126 +123,7 @@ namespace IoBTMessage.Models
 			var result = (UDTO_Platform)this.MemberwiseClone();
 			result.Flush();
 			return result;
-		}
-
-		public U RelateMembers<U>(UDTO_3D source, string name, UDTO_3D target) where U : UDTO_Relationship
-		{
-			var tag = $"{source.uniqueGuid}:{name}";
-			var relationship = Find<U>(tag);
-			if (relationship == null)
-			{
-				relationship = FindOrCreate<U>(tag, true);
-				relationship.Build(source.uniqueGuid, name, target.uniqueGuid);
-			}
-			else
-			{
-				relationship.Relate(target.uniqueGuid);
-			}
-
-			return relationship;
-		}
-
-		public U UnrelateMembers<U>(UDTO_3D source, string name, UDTO_3D target) where U : UDTO_Relationship
-		{
-			var tag = $"{source.uniqueGuid}:{name}";
-			var relationship = Find<U>(tag);
-			relationship?.Unrelate(target.uniqueGuid);
-
-			return relationship;
-		}
-
-		private Dictionary<string, T> CreateLookup<T>() where T : UDTO_3D
-		{
-			var result = new Dictionary<string, T>();
-			_lookup.Add(typeof(T).Name, result);
-			return result;
-		}
-		private Dictionary<string, T> FindLookup<T>() where T : UDTO_3D
-		{
-			var result = _lookup[typeof(T).Name] as Dictionary<string, T>;
-			return result;
-		}
-
-		public List<T> FindList<T>() where T : UDTO_3D
-		{
-			var lookup = FindLookup<T>();
-			return lookup.Values.ToList();
-		}
-
-		private void ClearLookup<T>() where T : UDTO_3D
-		{
-			var result = FindLookup<T>();
-			result.Clear();
-		}
-
-		private T CreateItem<T>(string name) where T : UDTO_3D
-		{
-			var found = Activator.CreateInstance<T>() as T;
-			found.name = name;
-			found.panID = panID;
-			found.platformName = platformName;
-			found.uniqueGuid = Guid.NewGuid().ToString();
-			return found;
-		}
-
-		public T Find<T>(string name) where T : UDTO_3D
-		{
-			var dict = FindLookup<T>();
-			dict.TryGetValue(name, out T found);
-			return found;
-		}
-
-		public T CreateUsing<T>(string name, string guid = null) where T : UDTO_3D
-		{
-			var found = FindOrCreate<T>(name,true);
-			if ( guid != null) 
-			{
-				found.uniqueGuid = guid;
-			}
-			
-			return found;
-		}
-
-		public T FindOrCreate<T>(string name, bool create = false) where T : UDTO_3D
-		{
-			var dict = FindLookup<T>();
-			if (!dict.TryGetValue(name, out T found) && create)
-			{
-				found = CreateItem<T>(name);
-				dict[name] = found;
-			}
-			return found;
-		}
-
-		public T Add<T>(T obj) where T : UDTO_3D
-		{
-			var dict = FindLookup<T>();
-			var key = obj.name;
-			dict[key] = obj;
-			return obj;
-		}
-		public T AddRefreshOrDelete<T>(T obj, bool delete = false) where T : UDTO_3D
-		{
-			var key = obj.name;
-			var dict = FindLookup<T>();
-			if (dict.TryGetValue(key, out T found))
-			{
-				if (delete)
-				{
-					dict.Remove(key);
-				}
-				else
-				{
-					found.CopyFrom(obj);
-				}
-			}
-			else if (!delete)
-			{
-				dict[key] = obj;
-				found = obj;
-			}
-			return found;
-		}
+		}	
 
 	}
 

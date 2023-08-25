@@ -2,6 +2,12 @@
 
 namespace IoBTMessage.Models
 {
+	public class DO_StepItem : DO_Hero
+	{
+		public int itemNumber { get; set; }
+
+	}
+
 	[System.Serializable]
 	public class DT_StepItem : DT_Hero
 	{
@@ -14,7 +20,7 @@ namespace IoBTMessage.Models
 
 		public override List<DT_AssetFile> CollectAssetFiles(List<DT_AssetFile> list, bool deep)
 		{
-			base.CollectAssetFiles(list,deep);
+			base.CollectAssetFiles(list, deep);
 
 			return list;
 		}

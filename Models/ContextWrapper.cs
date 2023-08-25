@@ -49,14 +49,6 @@ namespace IoBTMessage.Models
 
 		public ContextWrapper()
 		{
-			// this.dateTime = DateTime.UtcNow;
-
-			// this.payloadType = typeof(T).Name;
-			// this.payload = new List<T>() { };
-			// this.length = this.payload.Count;
-
-			// this.hasError = false;
-			// this.message = string.Empty;
 		}
 
 		public ContextWrapper(T obj, string error = "")
@@ -91,6 +83,10 @@ namespace IoBTMessage.Models
 			this.payload = new List<T>() { };
 			this.hasError = true;
 			this.message = error;
+		}
+		public List<T> PayloadAsList()
+		{
+			return this.payload.ToList();
 		}
 
 		public static ContextWrapper<Success> success(string message = "")

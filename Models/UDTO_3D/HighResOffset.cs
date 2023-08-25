@@ -2,7 +2,7 @@ namespace IoBTMessage.Models
 {
 	public class SPEC_HighResOffset : SPEC_HighResPosition
 	{
-		public new string units { get; set; } = "m";
+
 		public new double xLoc { get; set; } = 0;
 		public new double yLoc { get; set; } = 0;
 		public new double zLoc { get; set; } = 0;

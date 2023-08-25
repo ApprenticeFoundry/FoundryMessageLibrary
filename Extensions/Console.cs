@@ -3,10 +3,15 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace IoBTMessage.Models
+namespace IoBTMessage.Extensions
 {
 	public static class ConsoleHelpers
 	{
+
+		public static void WriteTrace(this String str)
+		{
+			$"... {str}".WriteLine(ConsoleColor.DarkMagenta);
+		}
 
 		public static void WriteLine<T>(this T entity, ConsoleColor? color = null)
 		{

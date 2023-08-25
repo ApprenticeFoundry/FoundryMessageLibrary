@@ -2,9 +2,17 @@
 
 namespace IoBTMessage.Models
 {
-	public interface IDT_Reference 
+	public interface IDT_Reference
 	{
 		//string targetGuid;
+	}
+
+	public class DO_AssetReference : DO_Title, IDT_Reference
+	{
+		public string assetGuid { get; set; }
+		public string heroGuid { get; set; }
+		public DT_AssetFile asset { get; set; }
+		public HighResPosition position { get; set; }
 	}
 
 	[System.Serializable]
@@ -13,6 +21,7 @@ namespace IoBTMessage.Models
 		public string assetGuid;
 		public string heroGuid;
 		public DT_AssetFile asset;
+		public DT_Thread thread;
 		public HighResPosition position;
 
 
@@ -20,14 +29,14 @@ namespace IoBTMessage.Models
 		{
 		}
 
-		public DT_AssetReference AttachDocument(DT_AssetFile doc) 
+		public DT_AssetReference AttachDocument(DT_AssetFile doc)
 		{
 			asset = doc;
 			assetGuid = doc.guid;
 			return this;
 		}
 
-		public DT_AssetReference ClearDocument() 
+		public DT_AssetReference ClearDocument()
 		{
 			assetGuid = asset?.guid;
 			asset = null;

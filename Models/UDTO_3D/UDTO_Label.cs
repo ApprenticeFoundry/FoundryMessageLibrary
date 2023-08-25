@@ -5,10 +5,10 @@ namespace IoBTMessage.Models
 {
 	public class SPEC_Label : SPEC_3D
 	{
-		public string text;
-		public List<string> details;
-		public string targetGuid;
-		public SPEC_HighResPosition position;
+		public string text { get; set;  }
+		public List<string> details { get; set;  }
+		public string targetGuid { get; set;  }
+		public SPEC_HighResPosition position { get; set;  }
 
 		public static SPEC_Label RandomSpec()
 		{
@@ -18,6 +18,15 @@ namespace IoBTMessage.Models
 				text = gen.GenerateText(),
 				position = SPEC_HighResPosition.RandomSpec(),
 			};
+		}
+
+		public SPEC_Label CreateTextAt(string text, double xLoc = 0.0, double yLoc = 0.0, double zLoc = 0.0, string units = "m")
+		{
+			this.text = text.Trim();
+			this.type = "Label";
+			position = new SPEC_HighResPosition(xLoc, yLoc, zLoc, units);
+
+			return this;
 		}
 	}
 	
@@ -59,13 +68,8 @@ namespace IoBTMessage.Models
 		{
 			this.text = text.Trim();
 			this.type = "Label";
-			position = new HighResPosition()
-			{
-				units = units,
-				xLoc = xLoc,
-				yLoc = yLoc,
-				zLoc = zLoc
-			};
+			position = new HighResPosition(xLoc, yLoc, zLoc, units);
+
 			return this;
 		}
 
@@ -74,13 +78,8 @@ namespace IoBTMessage.Models
 			this.text = text.Trim();
 			this.details = details;
 			this.type = "Label";
-			position = new HighResPosition()
-			{
-				units = units,
-				xLoc = xLoc,
-				yLoc = yLoc,
-				zLoc = zLoc
-			};
+
+			position = new HighResPosition(xLoc, yLoc, zLoc, units);
 			return this;
 		}
 

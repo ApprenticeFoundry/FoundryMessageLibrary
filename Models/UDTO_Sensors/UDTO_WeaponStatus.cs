@@ -22,7 +22,6 @@ namespace IoBTMessage.Models
 	{
 		public int currentAmmoCount;
 		public string type;
-		public SPEC_IMUReading IMU;
 		public double targetDistance; //assume meters
 
 		public static SPEC_WeaponStatus RandomSpec()
@@ -31,7 +30,6 @@ namespace IoBTMessage.Models
 			return new SPEC_WeaponStatus()
 			{
 				currentAmmoCount = gen.GenerateInt(0, 90),
-				IMU = SPEC_IMUReading.RandomSpec(),
 				targetDistance = gen.GenerateDouble(60, 410),
 			};
 		}
@@ -44,7 +42,6 @@ namespace IoBTMessage.Models
 	{
 		public int currentAmmoCount;
 		public string type;
-		public UDTO_IMUReading IMU;
 		public double targetDistance; //assume meters
 	}
 

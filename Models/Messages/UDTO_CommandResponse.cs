@@ -1,3 +1,4 @@
+using IoBTMessage.Extensions;
 namespace IoBTMessage.Models
 {
 	public class SPEC_CommandResponse : SPEC_Command
